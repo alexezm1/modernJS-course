@@ -33,6 +33,33 @@ const StorageController = (function () {
 
       return items;
     },
+    updateItemStorage: (updatedItem) => {
+      let items = JSON.parse(localStorage.getItem("items"));
+
+      items.forEach((item, index) => {
+        if (updatedItem.id === item.id) {
+          items.splice(index, 1, updatedItem);
+        }
+      });
+
+      // Re set LS
+      localStorage.setItem("items", JSON.stringify(items));
+    },
+    deleteItemFromStorage: (id) => {
+      let items = JSON.parse(localStorage.getItem("items"));
+
+      items.forEach((item, index) => {
+        if (id === item.id) {
+          items.splice(index, 1);
+        }
+      });
+
+      // Re set LS
+      localStorage.setItem("items", JSON.stringify(items));
+    },
+    clearAllItemsFromStorage: () => {
+      localStorage.removeItem("items");
+    },
   };
 })();
 
@@ -155,6 +182,9 @@ const ItemController = (function () {
     },
     clearAllItems: () => {
       state.items = [];
+
+      // Clear all items from Local Storage
+      StorageController.clearAllItemsFromStorage();
     },
   };
 })();
@@ -241,6 +271,9 @@ const UIController = (function () {
       // Add Calories to UI
       UIController.showTotalCalories(totalCalories);
 
+      // Update LocalStorage
+      StorageController.updateItemStorage(updatedItem);
+
       UIController.clearEditState();
     },
     deleteListItem: (id) => {
@@ -254,6 +287,9 @@ const UIController = (function () {
 
       // Add Calories to UI
       UIController.showTotalCalories(totalCalories);
+
+      // Delete Item from LS
+      StorageController.deleteItemFromStorage(id);
 
       UIController.clearEditState();
     },
